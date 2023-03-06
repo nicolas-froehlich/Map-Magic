@@ -1,21 +1,46 @@
 ## Easy administrative unit plotting with GADM
 
-# auf dem Mac bei Lisa hat es folgenderma�en funktioniert, probier das doch mal aus :)
+# auf dem Mac bei Lisa hat es folgenderma?en funktioniert, probier das doch mal aus :)
 
 install.packages('rgdal')
 # dann R neustarten
-# wenn man bei den installs gefragt wird wegen den Bin�rdateien immer 'no' eingeben
+# wenn man bei den installs gefragt wird wegen den Bin?rdateien immer 'no' eingeben
 
-
+install.packages("lintr")
+lintr::lint("~/docs/uni/DataStuff/NewHobby/Map-Magic/plotting_with_GADM.R")
 
 ###### fuer Maite #####
+
+
+install.packages('sf')
+library(sf)
+geo <- st_read("/Users/nf/docs/uni/DataStuff/NewHobby/data/geoBoundaries-DEU-ADM1-all")
+
+names(geo)
+maites_values <- c(4.84, 7.6, 40, 4.88, 48, 44, 4.3, 4, 8, 8, 0.84, 8.44, 0.84, 8, 4, 4)
+mydata <- data.frame(shapeName = geo$shapeName, prevalence = maites_values)
+mydata
+
+## merge shape file with data
+final_geo <- merge(geo, mydata, by = "shapeName")
+head(final_geo)
+
+## nice plot
+ggplot(final_geo) +
+  geom_sf(aes(fill = prevalence), color = "black", size = 0.25)  +
+  coord_sf() + 
+  scale_fill_distiller(name = "prevalence", 
+                       palette = "YlGn", 
+                       breaks = pretty_breaks(n = 5)) + 
+  theme_nothing(legend = TRUE) + 
+  labs(title = "Prevalence of X in Germany")
 
 
 ## source https://klein.uk/teaching/viz/datavis-maps/
 
 ## load packages
 install.packages("raster")
-install.packages("ggplot2")
+install.packages ("ggplot2")
 install.packages("rgeos")
 install.packages("maptools")
 install.packages("scales")
@@ -40,7 +65,7 @@ head(states.shp.f)
 num.states <- length(states.shp$NAME_1)
 ##### HIER! fügst du deine Werte für die 16 Bundesländer ein, Reihenfolge siehe nächster Befehl
 states.shp$NAME_1
-maites_values <- c(4.84, 8.4, 2.42, 4.88, 4.8, 4.4, 4, 4, 8, 8, 0.84, 8.44, 0.84, 8, 4, 4)
+maites_values <- c(4.84, 5, 2.33, 4.88, 4.8, 4.4, 43, 4, 8, 8, 0.84, 8.44, 0.84, 8, 4, 4)
 mydata <- data.frame(id = states.shp$NAME_1, prevalence = maites_values)
 mydata
 
