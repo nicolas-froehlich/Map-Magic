@@ -1,0 +1,4 @@
+https://open-geodaten-konstanz-gis.opendata.arcgis.com/datasets/b5d600268d87451db3faf41463c69fd3_87/explore?location=47.698347%2C9.203683%2C10.77
+
+Use the KN Baumkataster to visualize where which kinds of trees are in Konstanz.
+Guess age based on species, height, trunk diameter.
