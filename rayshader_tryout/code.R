@@ -21,8 +21,6 @@ renv::init(bare = TRUE)
 devtools::install_github("tylermorganwall/rayshader")
 library(rayshader)
 
-library(rayshader)
-
 # load a map with the raster package.
 loadzip = tempfile() # tempfile returns a vector of character strings which can be used as names for temporary files.
 download.file("https://tylermw.com/data/dem_01.tif.zip", loadzip) # download the ZIP file and save it to the loadzip file path
@@ -41,7 +39,7 @@ elmat %>%
 
 #sphere_shade can shift the sun direction:
 elmat %>%
-  sphere_shade(sunangle = 45, texture = "desert") %>%
+  sphere_shade(sunangle = 45, texture = "bw") %>%
   plot_map()
 
 
@@ -78,6 +76,11 @@ elmat %>%
 Sys.sleep(0.2)
 render_snapshot()
 
+
+
+
+
+
 # ok, looks cool
 # let's get to the hard part: doing it myself with the Matterhorn data
 
@@ -86,23 +89,63 @@ render_snapshot()
 #### documentation see: https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm?qt-science_center_objects=0#qt-science_center_objects
 #### a (free) registration at USGS is necessary for downloading
 
+
+
+
+
+
 # step one: read in the .tif data and get it into RasterLayer format
-
-# doesn't work with code from above
 library(raster)
-matterhorn = raster::raster("/Users/nf/Downloads/n45_e007_1arc_v3.tif")
+matterhorn = raster::raster("n45_e007_1arc_v3.tif")
+print(matterhorn)
 
-elmat_2 = raster_to_matrix(localtif)
+# check the coordinates of Matterhorn (45.97, 7.65) and use a rectangle around it (trial and error) to crop
+
+# medium margin around Matterhorn
+xmin <- 7.5   # Minimum x-coordinate
+xmax <- 7.7   # Maximum x-coordinate
+ymin <- 45.8   # Minimum y-coordinate
+ymax <- 46.0   # Maximum y-coordinate
+
+## very small margin around Matterhorn
+xmin <- 7.627   # Minimum x-coordinate
+xmax <- 7.694   # Maximum x-coordinate
+ymin <- 45.965   # Minimum y-coordinate
+ymax <- 46.0   # Maximum y-coordinate
+
+# Create a rectangular extent object
+crop_extent <- extent(xmin, xmax, ymin, ymax)
+
+# Crop the RasterLayer to the specified rectangle
+matterhorn_cropped <- crop(matterhorn, crop_extent)
+
+# Print information about the cropped raster
+print(matterhorn_cropped)
+
+elmat = raster_to_matrix(matterhorn_cropped)
+
+
+elmat %>%
+  height_shade(texture = topo.colors(256)) %>%
+  add_shadow(ray_shade(elmat,zscale=50),0.3) %>%
+  plot_map()
+
+
+## check whether the black parts are NAs!
 
 
 
-# trying with terra package
-install.packages("terra")
-library(terra)
-#### from https://rspatial.org/spatial/5-files.html
-f <- system.file("dem_01.tif", package="terra")
-basename(f)
 
-r <- rast(f)
-r
+########
 
+# # setwd("~/docs/uni/DataStuff/Spatial/Map-Magic/rayshader_tryout")
+# 
+# # trying with terra package
+# install.packages("terra")
+# library(terra)
+# #### from https://rspatial.org/spatial/5-files.html
+# f <- system.file("/code.R", package="terra")
+# basename(f)
+# 
+# r <- terra::rast("/dem_01.tif")
+# r
