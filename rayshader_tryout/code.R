@@ -68,11 +68,11 @@ elmat %>%
 
 # Rayshader also supports 3D mapping by passing a texture map (either external or one produced by rayshader) into the plot_3d function.
 elmat %>%
-  sphere_shade(texture = "bw") %>% # played around with the colouring
-  add_water(detect_water(elmat), color = "unicorn") %>%
+  sphere_shade(texture = "imhof2") %>% # played around with the colouring
+  add_water(detect_water(elmat), color = "desert") %>%
   add_shadow(ray_shade(elmat, zscale = 3), 0.5) %>%
   add_shadow(ambient_shade(elmat), 0) %>%
-  plot_3d(elmat, zscale = 10, fov = 0, theta = 135, zoom = 0.75, phi = 45, windowsize = c(1000, 800))
+  plot_3d(elmat, zscale = 10, fov = 0, theta = 45, zoom = 0.75, phi = 45, windowsize = c(1000, 800))
 Sys.sleep(0.2)
 render_snapshot()
 
@@ -96,8 +96,19 @@ render_snapshot()
 
 # step one: read in the .tif data and get it into RasterLayer format
 library(raster)
-matterhorn = raster::raster("n45_e007_1arc_v3.tif")
+aosta = raster::raster("data/aosta_n45_e007_1arc_v3.tif")
+noumea = raster::raster("data/noumea_void_filled_s23_e166_3arc_v2.tif")
+benningen = raster::raster("data/benningen_n48_e009_1arc_v3.tif")
+world = raster::raster("data/eu_dem_v11_E10N10/eu_dem_v11_E10N10.TIF")
 print(matterhorn)
+print(noumea)
+print(benningen)
+print(world) # has Lambert Azimuthal Equal Area projection
+
+
+projection(world) <- "+proj=longlat +datum=WGS84 +no_defs"
+
+
 
 # check the coordinates of Matterhorn (45.97, 7.65) and use a rectangle around it (trial and error) to crop
 
@@ -113,22 +124,55 @@ xmax <- 7.694   # Maximum x-coordinate
 ymin <- 45.965   # Minimum y-coordinate
 ymax <- 46.0   # Maximum y-coordinate
 
+## for the world
+xmin <- 1500000   # Minimum x-coordinate
+xmax <- 1600000   # Maximum x-coordinate
+ymin <- 1500000   # Minimum y-coordinate
+ymax <- 1600000   # Maximum y-coordinate
+
+## medium margin around Noumea
+xmin <- 1500000   # Minimum x-coordinate
+xmax <- 1600000   # Maximum x-coordinate
+ymin <- 1500000   # Minimum y-coordinate
+ymax <- 1600000   # Maximum y-coordinate
+
+
+## use the website https://boundingbox.klokantech.com/ to get the CSV bounding box of Noumea.
+## when copy and pasting it, I have to change the coordinates of second and third position to get them into the required order
+crop_extent <- extent(166.369496,166.534158,-22.324283,-22.192872) # noumea small
+crop_extent <- extent(166.30274,166.604672,-22.381037,-22.147778) # noumea medium
+crop_extent <- extent(166.5244,167.1765,-22.5442,-22.0654) # noumea big
+
+
+
+crop_extent <- extent(9.139179,9.302227,48.889302,48.997654) # benningen small
+
+
+
+noumea_cropped <- crop(noumea, crop_extent)
+benningen_cropped <- crop(benningen, crop_extent)
+
 # Create a rectangular extent object
 crop_extent <- extent(xmin, xmax, ymin, ymax)
 
 # Crop the RasterLayer to the specified rectangle
 matterhorn_cropped <- crop(matterhorn, crop_extent)
+world_cropped <- crop(world, crop_extent)
 
 # Print information about the cropped raster
 print(matterhorn_cropped)
+print(world_cropped)
+print(noumea_cropped)
 
-elmat = raster_to_matrix(matterhorn_cropped)
+elmat = raster_to_matrix(noumea_cropped)
+elmat = raster_to_matrix(benningen_cropped)
 
 
 elmat %>%
   height_shade(texture = topo.colors(256)) %>%
   add_shadow(ray_shade(elmat,zscale=50),0.3) %>%
   plot_map()
+
 
 
 ## check whether the black parts are NAs!
