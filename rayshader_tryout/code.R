@@ -1,7 +1,7 @@
 #### Friday, June 2th, 2023
 #### Nicolas Fröhlich
 
-#### Here, I want to try out and play around with the rayshader package. Most of the code stems from the official rayshade website https://www.rayshader.com/
+#### Here, I want to try out and play around with the rayshader package. Most of the code stems from the official rayshader website https://www.rayshader.com/
 
 #### In a recent chat about spatial data related stuff with Tilman Hauk, a former colleague of mine, he recommended the package to me. We challenged ourselves to create a shaded elevation map of the famous Swiss Matterhorn mountain.
 #### I'll try...
@@ -18,7 +18,7 @@ renv::init(bare = TRUE)
 
 # To install the latest version from Github:
 # install.packages("devtools")
-devtools::install_github("tylermorganwall/rayshader")
+# devtools::install_github("tylermorganwall/rayshader")
 library(rayshader)
 
 # load a map with the raster package.
@@ -85,9 +85,9 @@ render_snapshot()
 # let's get to the hard part: doing it myself with the Matterhorn data
 
 #### I think the relevant GeoTIFF data can be found here: https://earthexplorer.usgs.gov/
-#### by selecting “Digital Elevation” under the "Data Sets" tab and choosing the SRTM option, then the 1-Arc second Global dataset
+#### by selecting “Digital Elevation” under the "Data Sets" tab and choosing the SRTM option, then the '1-Arc second Global' dataset
 #### documentation see: https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm?qt-science_center_objects=0#qt-science_center_objects
-#### a (free) registration at USGS is necessary for downloading
+#### NOTE: a (free) registration at USGS is necessary for downloading
 
 
 
@@ -99,6 +99,8 @@ library(raster)
 aosta = raster::raster("data/aosta_n45_e007_1arc_v3.tif")
 noumea = raster::raster("data/noumea_void_filled_s23_e166_3arc_v2.tif")
 benningen = raster::raster("data/benningen_n48_e009_1arc_v3.tif")
+
+# these are from 
 world = raster::raster("data/eu_dem_v11_E10N10/eu_dem_v11_E10N10.TIF")
 print(matterhorn)
 print(noumea)
@@ -176,20 +178,6 @@ elmat %>%
 
 
 ## check whether the black parts are NAs!
+## happens only when applying the add_shadow
 
-
-
-
-########
-
-# # setwd("~/docs/uni/DataStuff/Spatial/Map-Magic/rayshader_tryout")
-# 
-# # trying with terra package
-# install.packages("terra")
-# library(terra)
-# #### from https://rspatial.org/spatial/5-files.html
-# f <- system.file("/code.R", package="terra")
-# basename(f)
-# 
-# r <- terra::rast("/dem_01.tif")
-# r
+## use RMarkdown or Quarto later?
