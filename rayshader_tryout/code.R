@@ -102,7 +102,7 @@ benningen = raster::raster("data/benningen_n48_e009_1arc_v3.tif")
 
 # these are from 
 world = raster::raster("data/eu_dem_v11_E10N10/eu_dem_v11_E10N10.TIF")
-print(matterhorn)
+print(aosta)
 print(noumea)
 print(benningen)
 print(world) # has Lambert Azimuthal Equal Area projection
@@ -150,6 +150,7 @@ crop_extent <- extent(166.5244,167.1765,-22.5442,-22.0654) # noumea big
 crop_extent <- extent(9.139179,9.302227,48.889302,48.997654) # benningen small
 
 
+crop_extent <- extent(7.663605,7.671919,45.974516,45.978512) # matterhorn NA-check
 
 noumea_cropped <- crop(noumea, crop_extent)
 benningen_cropped <- crop(benningen, crop_extent)
@@ -158,16 +159,17 @@ benningen_cropped <- crop(benningen, crop_extent)
 crop_extent <- extent(xmin, xmax, ymin, ymax)
 
 # Crop the RasterLayer to the specified rectangle
-matterhorn_cropped <- crop(matterhorn, crop_extent)
+matterhorn <- crop(aosta, crop_extent)
 world_cropped <- crop(world, crop_extent)
 
 # Print information about the cropped raster
-print(matterhorn_cropped)
+print(matterhorn)
 print(world_cropped)
 print(noumea_cropped)
 
 elmat = raster_to_matrix(noumea_cropped)
 elmat = raster_to_matrix(benningen_cropped)
+elmat = raster_to_matrix(matterhorn)
 
 
 elmat %>%
@@ -177,7 +179,11 @@ elmat %>%
 
 
 
-## check whether the black parts are NAs!
-## happens only when applying the add_shadow
+## black parts are NAs!
+## get feeling for matrix/map conversion by selecting very small area with NAs and non-NAs.
+## Then plot and look at both
+## Reading the matrix row-wise left-to-right top-to-bottom, we start 'inserting the values' in the top left corner into the image and go column-wise downwards from left to right.
+
+
 
 ## use RMarkdown or Quarto later?
