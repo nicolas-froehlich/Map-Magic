@@ -175,3 +175,6 @@ dmypy.json
 # Spatial Data Format
 .geojson
 .tif
+.TIF
+.ovr
+.tif.ovr
